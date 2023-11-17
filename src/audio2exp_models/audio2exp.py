@@ -23,12 +23,13 @@ class Audio2Exp(nn.Module):
             current_mel_input = mel_input[:,i:i+10]
 
             #ref = batch['ref'][:, :, :64].repeat((1,current_mel_input.shape[1],1))           #bs T 64
+            #ref β0   ratio Zblink
             ref = batch['ref'][:, :, :64][:, i:i+10]
             ratio = batch['ratio_gt'][:, i:i+10]                               #bs T
-
+            # audiox  输入的音频   # bs*T 1 80 16
             audiox = current_mel_input.view(-1, 1, 80, 16)                  # bs*T 1 80 16
 
-            curr_exp_coeff_pred  = self.netG(audiox, ref, ratio)         # bs T 64 
+            curr_exp_coeff_pred  = self.netG(audiox, ref, ratio)         # 输出 表情系数 bs T 64 
 
             exp_coeff_pred += [curr_exp_coeff_pred]
 
