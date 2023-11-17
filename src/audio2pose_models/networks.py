@@ -29,7 +29,8 @@ class ResidualConv(nn.Module):
 class Upsample(nn.Module):
     def __init__(self, input_dim, output_dim, kernel, stride):
         super(Upsample, self).__init__()
-
+        'nn.ConvTranspose2d 二维转置卷积（也称为反卷积或上采样卷积）。'
+        '转置卷积的作用是将输入的尺寸扩大，通常用于上采样或生成模型中。'
         self.upsample = nn.ConvTranspose2d(
             input_dim, output_dim, kernel_size=kernel, stride=stride
         )
@@ -41,6 +42,7 @@ class Upsample(nn.Module):
 class Squeeze_Excite_Block(nn.Module):
     def __init__(self, channel, reduction=16):
         super(Squeeze_Excite_Block, self).__init__()
+        '将输入的二维特征图（通常是卷积层的输出）池化为固定大小的 1x1'
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.fc = nn.Sequential(
             nn.Linear(channel, channel // reduction, bias=False),
@@ -51,8 +53,10 @@ class Squeeze_Excite_Block(nn.Module):
 
     def forward(self, x):
         b, c, _, _ = x.size()
+        #self.avg_pool(x) (b,c,1,1)
         y = self.avg_pool(x).view(b, c)
         y = self.fc(y).view(b, c, 1, 1)
+        #y.expand_as(x) (b,c,1,1)-->x.size()
         return x * y.expand_as(x)
 
 
@@ -104,7 +108,7 @@ class ASPP(nn.Module):
 class Upsample_(nn.Module):
     def __init__(self, scale=2):
         super(Upsample_, self).__init__()
-
+        '双线性插值算法'
         self.upsample = nn.Upsample(mode="bilinear", scale_factor=scale)
 
     def forward(self, x):
