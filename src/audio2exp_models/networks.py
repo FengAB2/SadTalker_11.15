@@ -5,6 +5,12 @@ from torch import nn
 class Conv2d(nn.Module):
     def __init__(self, cin, cout, kernel_size, stride, padding, residual=False, use_act = True, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        """
+        cin：输入通道数
+        cout：输出通道数
+        residual:是否使用残差
+        use_act:是否使用激活函数
+        """
         self.conv_block = nn.Sequential(
                             nn.Conv2d(cin, cout, kernel_size, stride, padding),
                             nn.BatchNorm2d(cout)
@@ -35,10 +41,12 @@ class SimpleWrapperV2(nn.Module):
             Conv2d(64, 64, kernel_size=3, stride=1, padding=1, residual=True),
             Conv2d(64, 64, kernel_size=3, stride=1, padding=1, residual=True),
 
+            ####stride=3   水平和竖直都为3
             Conv2d(64, 128, kernel_size=3, stride=3, padding=1),
             Conv2d(128, 128, kernel_size=3, stride=1, padding=1, residual=True),
             Conv2d(128, 128, kernel_size=3, stride=1, padding=1, residual=True),
 
+            ###stride=(3, 2)  水平为3，竖直为2
             Conv2d(128, 256, kernel_size=3, stride=(3, 2), padding=1),
             Conv2d(256, 256, kernel_size=3, stride=1, padding=1, residual=True),
 
@@ -58,13 +66,20 @@ class SimpleWrapperV2(nn.Module):
                 state_dict[k.replace('module.audio_encoder.', '')] = v
         self.audio_encoder.load_state_dict(state_dict)
         '''
-
+        ##mapping1 论文中第一个网络的ΦM
         self.mapping1 = nn.Linear(512+64+1, 64)
         #self.mapping2 = nn.Linear(30, 64)
         #nn.init.constant_(self.mapping1.weight, 0.)
+
+        ###将mapping1.bias初始化为0
         nn.init.constant_(self.mapping1.bias, 0.)
 
     def forward(self, x, ref, ratio):
+        """
+        x:audio
+        ref：β0
+        ratio:Zblink
+        """
         x = self.audio_encoder(x).view(x.size(0), -1)
         ref_reshape = ref.reshape(x.size(0), -1)
         ratio = ratio.reshape(x.size(0), -1)
