@@ -10,6 +10,17 @@ You need to implement the following functions:
     -- <__init__>: Initialize this dataset class.
     -- <__getitem__>: Return a data point and its metadata information.
     -- <__len__>: Return the number of images.
+    数据集类模板
+    此模块为用户提供了实现自定义数据集的模板。
+    您可以指定“--dataset_mode template”来使用此数据集。
+    类名应该与filename及其dataset_mode选项一致。
+    文件名应为<dataset_mode>_dataset.py
+    类名应为<Dataset_mode>Dataset.py
+    您需要实现以下功能：
+    --＜modify_commandline_options＞：添加特定于数据集的选项并重写现有选项的默认值。
+    --<__init__>：初始化此数据集类。
+    --<__getitem__>：返回一个数据点及其元数据信息。
+    --<__len__>：返回图像数量。
 """
 from data.base_dataset import BaseDataset, get_transform
 # from data.image_folder import make_dataset
@@ -28,6 +39,12 @@ class TemplateDataset(BaseDataset):
 
         Returns:
             the modified parser.
+            添加新的特定于数据集的选项，并重写现有选项的默认值。
+            参数：
+            parser—原始选项解析器
+            is_train（bool）——无论是训练阶段还是测试阶段。您可以使用此标志添加特定于培训或特定于测试的选项。
+            返回值：
+            修改后的解析器。
         """
         parser.add_argument('--new_dataset_option', type=float, default=1.0, help='new dataset option')
         parser.set_defaults(max_dataset_size=10, new_dataset_option=2.0)  # specify dataset-specific default values
@@ -43,6 +60,13 @@ class TemplateDataset(BaseDataset):
         - save the options (have been done in BaseDataset)
         - get image paths and meta information of the dataset.
         - define the image transformation.
+        初始化此数据集类。
+        参数：
+        opt（Option类）——存储所有实验标志；需要是BaseOptions的子类
+        这里可以做一些事情。
+        -保存选项（已在BaseDataset中完成）
+        -获取数据集的图像路径和元信息。
+        -定义图像变换。
         """
         # save the option and dataset root
         BaseDataset.__init__(self, opt)
@@ -64,6 +88,15 @@ class TemplateDataset(BaseDataset):
         Step 2: load your data from the disk: e.g., image = Image.open(path).convert('RGB').
         Step 3: convert your data to a PyTorch tensor. You can use helpder functions such as self.transform. e.g., data = self.transform(image)
         Step 4: return a data point as a dictionary.
+        返回数据点及其元数据信息。
+        参数：
+        index—用于数据索引的随机整数
+        返回值：
+        一本有他们名字的数据字典。它通常包含数据本身及其元数据信息。
+        步骤1：获取随机图像路径：例如，path=self.image_paths[index]
+        步骤2：从磁盘加载数据：例如，image=image.open（path）.convert（'RGB'）。
+        步骤3：将数据转换为PyTorch张量。您可以使用self.transform.等帮助程序函数。例如，data=self.transform（image）
+        步骤4：将数据点作为字典返回。
         """
         path = 'temp'    # needs to be a string
         data_A = None    # needs to be a tensor
