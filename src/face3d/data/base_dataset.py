@@ -1,6 +1,9 @@
 """This module implements an abstract base class (ABC) 'BaseDataset' for datasets.
 
 It also includes common transformation functions (e.g., get_transform, __scale_width), which can be later used in subclasses.
+
+此模块为数据集实现了一个抽象基类（ABC）“BaseDataset”。
+它还包括常见的转换函数（例如，get_transform、__scale_width），这些函数稍后可以在子类中使用。
 """
 import random
 import numpy as np
