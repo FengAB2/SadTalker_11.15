@@ -21,6 +21,19 @@ class BaseDataset(data.Dataset, ABC):
     -- <__len__>:                       return the size of dataset.
     -- <__getitem__>:                   get a data point.
     -- <modify_commandline_options>:    (optionally) add dataset-specific options and set default options.
+    此类是数据集的抽象基类（ABC）。
+    
+    
+    要创建子类，您需要实现以下四个函数：
+    
+    --<__init__>：初始化类，首先调用BaseDataset__init__（self，opt）。
+    
+    --<__len__>：返回数据集的大小。
+    
+    --<__getitem__>：获取一个数据点。
+    
+    --＜modify_commandline_options＞：（可选）添加特定于数据集的选项并设置默认选项。
+    
     """
 
     def __init__(self, opt):
@@ -28,7 +41,10 @@ class BaseDataset(data.Dataset, ABC):
 
         Parameters:
             opt (Option class)-- stores all the experiment flags; needs to be a subclass of BaseOptions
-        """
+        初始化类；保存类中的选项
+        参数： 
+        opt（Option类）——存储所有实验标志；需要是BaseOptions的子类
+                """
         self.opt = opt
         # self.root = opt.dataroot
         self.current_epoch = 0
@@ -43,12 +59,29 @@ class BaseDataset(data.Dataset, ABC):
 
         Returns:
             the modified parser.
+
+            添加新的特定于数据集的选项，并重写现有选项的默认值。
+
+
+            参数：
+            
+            parser—原始选项解析器
+            
+            is_train（bool）——无论是训练阶段还是测试阶段。您可以使用此标志添加特定于培训或特定于测试的选项。
+            
+            
+            退货：
+            
+            修改后的解析器。
         """
         return parser
 
     @abstractmethod
     def __len__(self):
-        """Return the total number of images in the dataset."""
+        """Return the total number of images in the dataset.
+        
+        返回数据集中的图像总数。
+        """
         return 0
 
     @abstractmethod
@@ -60,6 +93,13 @@ class BaseDataset(data.Dataset, ABC):
 
         Returns:
             a dictionary of data with their names. It ususally contains the data itself and its metadata information.
+            
+            
+        返回数据点及其元数据信息。
+        参数：  
+        index--用于数据索引的随机整数  
+        返回值：
+        一本有他们名字的数据字典。它通常包含数据本身及其元数据信息。
         """
         pass
 
