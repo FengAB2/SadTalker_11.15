@@ -27,10 +27,27 @@ class CVAE(nn.Module):
                                 audio_emb_in_size, audio_emb_out_size, seq_len)
         self.decoder = DECODER(decoder_layer_sizes, latent_size, num_classes,
                                 audio_emb_in_size, audio_emb_out_size, seq_len)
+
+    
+#这段代码实现了重参数化技巧，通常在变分自编码器（Variational Autoencoder，VAE）中使用。
+#VAE是生成模型，以概率方式学习对数据进行编码和解码。重参数化技巧用于通过采样过程传播梯度，从而可以使用基于梯度的优化方法训练模型。
     def reparameterize(self, mu, logvar):
         std = torch.exp(0.5 * logvar)
         eps = torch.randn_like(std)
         return mu + eps * std
+        """
+        mu 是分布的均值，而 logvar 是分布的对数方差（或标准差的对数）。这些是概率分布的参数，通常假设是正态分布。
+
+        std = torch.exp(0.5 * logvar) 从对数方差计算标准差。标准差（std）的计算方式是对数方差的一半的指数。
+
+        eps = torch.randn_like(std) 生成一个与 std 相同形状的随机样本，这是从标准正态分布中采样的随机噪声向量。
+
+        return mu + eps * std 执行了重参数化。不直接从具有参数 mu 和 std 的分布中采样，而是引入了一个随机变量 eps，
+        通过 std 缩放并加到均值 mu 上。这样，采样操作变得可微分，允许梯度通过采样过程反向传播。
+
+        总的来说，这个重参数化技巧使模型能够以一种对训练中的基于梯度的优化有利的方式从分布中进行采样，从而使得可以训练生成模型，比如VAE。
+        """
+
 
     def forward(self, batch):
         batch = self.encoder(batch)
