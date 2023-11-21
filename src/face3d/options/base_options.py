@@ -15,6 +15,10 @@ class BaseOptions():
 
     It also implements several helper functions such as parsing, printing, and saving the options.
     It also gathers additional options defined in <modify_commandline_options> functions in both dataset class and model class.
+
+    这个类提供了一种方便的方法来管理训练和测试过程中的各种配置选项，包括模型选择、GPU 设置、训练参数等。这些选项可以通过命令行传递，也可以通过修改脚本中的默认值来进行设置。
+
+
     """
 
     def __init__(self, cmd_line=None):
