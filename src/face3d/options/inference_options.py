@@ -5,6 +5,8 @@ class InferenceOptions(BaseOptions):
     """This class includes test options.
 
     It also includes shared options defined in BaseOptions.
+
+    InferenceOptions 类提供了一个方便的方式来配置在推断阶段所需的选项，包括输入输出路径、数据集模式等。这个类继承自 BaseOptions，因此可以利用基础选项的功能。
     """
 
     def initialize(self, parser):
