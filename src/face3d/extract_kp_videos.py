@@ -61,8 +61,8 @@ def read_video(filename):
     while cap.isOpened():
         ret, frame = cap.read()
         if ret:
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            frame = Image.fromarray(frame)
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  #BGR（OpenCV 默认的颜色通道顺序）转换为 RGB。
+            frame = Image.fromarray(frame)  #使用 PIL 库的 Image.fromarray 函数将 NumPy 数组表示的图像转换为 PIL 图像对象。
             frames.append(frame)
         else:
             break
