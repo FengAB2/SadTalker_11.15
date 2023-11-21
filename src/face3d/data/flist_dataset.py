@@ -142,6 +142,6 @@ class FlistDataset(BaseDataset):
 
     def __len__(self):
         """Return the total number of images in the dataset.
-        Return the total number of images in the dataset.
+       返回数据集中的图像总数。
         """
         return self.size
