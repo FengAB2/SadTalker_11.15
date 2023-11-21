@@ -1,4 +1,5 @@
 """This script defines the custom dataset for Deep3DFaceRecon_pytorch
+此脚本定义Deep3DFaceRecon_pyarch的自定义数据集
 """
 
 import os.path
@@ -19,8 +20,14 @@ from util.load_mats import load_lm3d
 def default_flist_reader(flist):
     """
     flist format: impath label\nimpath label\n ...(same to caffe's filelist)
+    flist格式：impath label\nimpath label\n。。。（与caffe的文件列表相同）
     """
     imlist = []
+    
+     """
+      strip() 方法去除首尾的空格和换行符等空白字符
+     """
+    
     with open(flist, 'r') as rf:
         for line in rf.readlines():
             impath = line.strip()
@@ -41,6 +48,8 @@ class FlistDataset(BaseDataset):
     """
     It requires one directories to host training images '/path/to/data/train'
     You can train the model with the dataset flag '--dataroot /path/to/data'.
+    它需要一个目录来托管训练图像“/path/to/data/trrain”
+    您可以使用数据集标志“--dataroot/path/to/data”来训练模型。
     """
 
     def __init__(self, opt):
@@ -48,6 +57,9 @@ class FlistDataset(BaseDataset):
 
         Parameters:
             opt (Option class) -- stores all the experiment flags; needs to be a subclass of BaseOptions
+            初始化此数据集类。
+            参数：
+            opt（Option类）——存储所有实验标志；需要是BaseOptions的子类
         """
         BaseDataset.__init__(self, opt)
         
@@ -76,6 +88,15 @@ class FlistDataset(BaseDataset):
             lm  (tensor)       -- its corresponding 3d landmarks
             im_paths (str)     -- image paths
             aug_flag (bool)    -- a flag used to tell whether its raw or augmented
+            返回数据点及其元数据信息。
+            参数：
+            index（int）—用于数据索引的随机整数
+            返回包含a、B、a_path和B_path的字典
+            img（张量）——输入域中的图像
+            msk（张量）——它对应的注意掩码
+            lm（张量）——它对应的三维界标
+            im_path（str）—映像路径
+            aug_flag（bool）——一个用于判断其原始还是增强的标志
         """
         msk_path = self.msk_paths[index % self.size]  # make sure index is within then range
         img_path = msk_path.replace('mask/', '')
@@ -121,5 +142,6 @@ class FlistDataset(BaseDataset):
 
     def __len__(self):
         """Return the total number of images in the dataset.
+        Return the total number of images in the dataset.
         """
         return self.size
