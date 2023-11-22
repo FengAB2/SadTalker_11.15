@@ -1,3 +1,4 @@
+# 这段代码主要是一个视频处理脚本，用于在视频中检测人脸关键点。
 import os
 import cv2
 import time
