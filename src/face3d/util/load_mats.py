@@ -1,4 +1,5 @@
 """This script is to load 3D face model for Deep3DFaceRecon_pytorch
+这段代码是为了加载和转换3D面部模型，以供Deep3DFaceRecon_pytorch使用。
 """
 
 import numpy as np
@@ -8,6 +9,7 @@ from array import array
 import os.path as osp
 
 # load expression basis
+# LoadExpBasis 函数用于加载表情基础。该函数读取已保存的表情基础数据，其中包括表情的主成分（PC）和对应的特征值（EV）。
 def LoadExpBasis(bfm_folder='BFM'):
     n_vertex = 53215
     Expbin = open(osp.join(bfm_folder, 'Exp_Pca.bin'), 'rb')
