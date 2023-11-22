@@ -1,3 +1,5 @@
+"""这个脚本的主要目的是使用Python中的FaceAlignment库来处理视频，提取人脸关键点。"""
+
 import os
 import cv2
 import time
@@ -11,11 +13,13 @@ from itertools import cycle
 
 from torch.multiprocessing import Pool, Process, set_start_method
 
+# 这个类是一个抽象，用于使用face_alignment库从图像中提取人脸关键点。
 class KeypointExtractor():
     def __init__(self, device):
         self.detector = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, 
                                                      device=device)   
 
+    # extract_keypoint 方法是一个核心函数，它处理单个图像或图像列表，提取人脸关键点，并将关键点保存在文本文件中。
     def extract_keypoint(self, images, name=None, info=True):
         if isinstance(images, list):
             keypoints = []
@@ -69,13 +73,16 @@ def read_video(filename):
     cap.release()
     return frames
 
+# 该函数以元组data为输入，其中data包含视频的文件名、命令行选项(opt)和GPU设备ID(device)。
 def run(data):
     filename, opt, device = data
-    os.environ['CUDA_VISIBLE_DEVICES'] = device
-    kp_extractor = KeypointExtractor()
-    images = read_video(filename)
+    os.environ['CUDA_VISIBLE_DEVICES'] = device  # 设置GPU设备。
+    kp_extractor = KeypointExtractor()  # 初始化一个KeypointExtractor(kp_extractor)对象。
+    images = read_video(filename)  #  使用read_video读取视频帧。 
     name = filename.split('/')[-2:]
+    #  如果输出目录不存在，则创建输出目录。
     os.makedirs(os.path.join(opt.output_dir, name[-2]), exist_ok=True)
+    #  调用extract_keypoint提取并保存人脸关键点。
     kp_extractor.extract_keypoint(
         images, 
         name=os.path.join(opt.output_dir, name[-2], name[-1])
