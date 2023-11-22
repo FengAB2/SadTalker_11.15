@@ -96,7 +96,13 @@ def detect_68p(img_path,sess,input_op,output_op):
             continue 
 
         # load data
+        # load_data 函数加载了当前图像文件 full_image_name 和与之对应的关键点文本文件 full_txt_name。
         img, five_points = load_data(full_image_name, full_txt_name)
+        # align_for_lm 函数接收原始图像 img 和检测到的五个关键点坐标 five_points。
+        # 该函数执行了一些对齐操作，以便为后续的68个关键点检测做准备。
+        # 返回值 input_img 包含了经过对齐操作后的图像数据。
+        #scale 是一个用于缩放的比例因子，可能用于将对齐后的图像尺寸与模型期望的尺寸匹配。
+         #bbox 是一个边界框，可能表示了对齐后的人脸区域。
         input_img, scale, bbox = align_for_lm(img, five_points) # align for 68 landmark detection 
 
         # if the alignment fails, remove corresponding image from the training list
