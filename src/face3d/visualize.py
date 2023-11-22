@@ -1,4 +1,5 @@
 # check the sync of 3dmm feature and the audio
+# 检查3dmm功能和音频的同步性
 import cv2
 import numpy as np
 from src.face3d.models.bfm import ParametricFaceModel
