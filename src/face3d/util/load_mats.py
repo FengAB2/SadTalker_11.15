@@ -31,15 +31,19 @@ def LoadExpBasis(bfm_folder='BFM'):
 
 
 # transfer original BFM09 to our face model
+# transferBFM09 函数执行将原始的BFM09（Basel Face Model 2009）转换为适用于Deep3DFaceRecon_pytorch的模型。
+# 具体来说，它加载原始BFM09的形状基础、表面纹理基础、表情基础等信息，并进行适当的缩放和截断，以获得适应Deep3DFaceRecon_pytorch的模型。
+# 转换涉及到的一些细节包括裁剪顶点、选择特定基础等。
+
 def transferBFM09(bfm_folder='BFM'):
     print('Transfer BFM09 to BFM_model_front......')
     original_BFM = loadmat(osp.join(bfm_folder, '01_MorphableModel.mat'))
-    shapePC = original_BFM['shapePC']  # shape basis
-    shapeEV = original_BFM['shapeEV']  # corresponding eigen value
-    shapeMU = original_BFM['shapeMU']  # mean face
-    texPC = original_BFM['texPC']  # texture basis
-    texEV = original_BFM['texEV']  # eigen value
-    texMU = original_BFM['texMU']  # mean texture
+    shapePC = original_BFM['shapePC']  # shape basis  包含形状主成分对应的特征值。这些特征值表示每个主成分的重要性。
+    shapeEV = original_BFM['shapeEV']  # corresponding eigen value 包含形状主成分对应的特征值。这些特征值表示每个主成分的重要性。
+    shapeMU = original_BFM['shapeMU']  # mean face 包含平均形状的矩阵。这是面部的平均形状。
+    texPC = original_BFM['texPC']  # texture basis 包含纹理主成分的矩阵。这些主成分用于表示面部的纹理变化。每一列代表一个主成分，总共有53490个主成分。
+    texEV = original_BFM['texEV']  # eigen value 包含纹理主成分对应的特征值。这些特征值表示每个纹理主成分的重要性。
+    texMU = original_BFM['texMU']  # mean texture 包含平均纹理的矩阵。这是面部的平均纹理。
 
     expPC, expEV = LoadExpBasis(bfm_folder)
 
@@ -104,6 +108,7 @@ def transferBFM09(bfm_folder='BFM'):
 
 
 # load landmarks for standard face, which is used for image preprocessing
+# load_lm3d 函数加载了标准面部的3D关键点。这些关键点用于图像预处理。
 def load_lm3d(bfm_folder):
 
     Lm3D = loadmat(osp.join(bfm_folder, 'similarity_Lm3D_all.mat'))
