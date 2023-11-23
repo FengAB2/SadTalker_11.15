@@ -67,13 +67,13 @@ class AddCoordsTh(nn.Module):
         input_tensor: (batch, c, x_dim, y_dim)
         """
         batch_size_tensor = input_tensor.shape[0]
-
+        # 创建一个形状为 [1, self.y_dim, 1] 的张量 xx_ones，其中所有元素均为 1。
         xx_ones = torch.ones([1, self.y_dim], dtype=torch.int32, device=input_tensor.device)
         xx_ones = xx_ones.unsqueeze(-1)
-
+        # 代码使用 torch.arange 和矩阵乘法创建x和y坐标的二维网格。这些网格覆盖范围为[0, x_dim-1]和[0, y_dim-1]，分别表示x和y的坐标。
         xx_range = torch.arange(self.x_dim, dtype=torch.int32, device=input_tensor.device).unsqueeze(0)
         xx_range = xx_range.unsqueeze(1)
-
+        # 
         xx_channel = torch.matmul(xx_ones.float(), xx_range.float())
         xx_channel = xx_channel.unsqueeze(-1)
 
@@ -83,11 +83,11 @@ class AddCoordsTh(nn.Module):
         yy_range = torch.arange(self.y_dim, dtype=torch.int32, device=input_tensor.device).unsqueeze(0)
         yy_range = yy_range.unsqueeze(-1)
 
-        yy_channel = torch.matmul(yy_range.float(), yy_ones.float())
+        yy_channel = torch.matmul(yy_range.float(), yy_ones.float())  # 建两个表示 x 和 y 坐标的通道（xx_channel 和 yy_channel），并对它们进行一系列的处理，包括矩阵乘法、维度调整、归一化等。
         yy_channel = yy_channel.unsqueeze(-1)
 
         xx_channel = xx_channel.permute(0, 3, 2, 1)
-        yy_channel = yy_channel.permute(0, 3, 2, 1)
+        yy_channel = yy_channel.permute(0, 3, 2, 1)   
 
         xx_channel = xx_channel / (self.x_dim - 1)
         yy_channel = yy_channel / (self.y_dim - 1)
@@ -97,7 +97,9 @@ class AddCoordsTh(nn.Module):
 
         xx_channel = xx_channel.repeat(batch_size_tensor, 1, 1, 1)
         yy_channel = yy_channel.repeat(batch_size_tensor, 1, 1, 1)
-
+        # 如果 with_boundary 为真且存在热图（heatmap），则处理边界信息。
+        # 通过阈值处理热图，创建仅在边界处为正的新坐标通道。这些通道分别为 xx_boundary_channel 和 yy_boundary_channel。
+        # 将这两个通道转移到与输入张量相同的设备。
         if self.with_boundary and heatmap is not None:
             boundary_channel = torch.clamp(heatmap[:, -1:, :, :], 0.0, 1.0)
 
@@ -107,8 +109,11 @@ class AddCoordsTh(nn.Module):
         if self.with_boundary and heatmap is not None:
             xx_boundary_channel = xx_boundary_channel.to(input_tensor.device)
             yy_boundary_channel = yy_boundary_channel.to(input_tensor.device)
+    # 拼接坐标信息到输入张量：将坐标信息（xx_channel 和 yy_channel）和可能的径向坐标（rr）拼接到输入张量上。
+    # 如果启用了边界信息，还将边界坐标信息拼接到输入张量上。
+        
         ret = torch.cat([input_tensor, xx_channel, yy_channel], dim=1)
-
+        
         if self.with_r:
             rr = torch.sqrt(torch.pow(xx_channel, 2) + torch.pow(yy_channel, 2))
             rr = rr / torch.max(rr)
@@ -119,8 +124,11 @@ class AddCoordsTh(nn.Module):
         return ret
 
 
+# 实现了坐标卷积（CoordConv），该方法是在输入张量中添加坐标信息，然后进行卷积操作。
 class CoordConvTh(nn.Module):
-    """CoordConv layer as in the paper."""
+    """CoordConv layer as in the paper.
+    "CoordConv layer as in the paper" 指的是在论文中描述的 CoordConv（Coordinate Convolution）层的实现。
+    """
 
     def __init__(self, x_dim, y_dim, with_r, with_boundary, in_channels, first_one=False, *args, **kwargs):
         super(CoordConvTh, self).__init__()
