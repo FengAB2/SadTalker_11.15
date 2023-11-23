@@ -73,6 +73,7 @@ def resize_n_crop_img(img, lm, t, s, target_size=224., mask=None):
     return img, lm, mask
 
 # utils for face reconstruction
+# extract_5p 函数：这个函数从所有的人脸关键点中提取出5个标志性的点，以便用于进一步的图像对齐操作。
 def extract_5p(lm):
     lm_idx = np.array([31, 37, 40, 43, 46, 49, 55]) - 1
     lm5p = np.stack([lm[lm_idx[0], :], np.mean(lm[lm_idx[[1, 2]], :], 0), np.mean(
@@ -81,6 +82,9 @@ def extract_5p(lm):
     return lm5p
 
 # utils for face reconstruction
+# align_img 函数：这是主要的图像对齐函数，它接受原始图像、关键点、标准3D人脸关键点、（可选的）掩码以及其他一些参数。
+# 它首先调用 POS 函数计算平移向量 t 和缩放因子 s，
+# 然后使用这些参数调用 resize_n_crop_img 函数对图像进行裁剪和调整。最后，它返回调整后的图像、关键点、掩码以及转换参数。
 def align_img(img, lm, lm3D, mask=None, target_size=224., rescale_factor=102.):
     """
     Return:
