@@ -1,4 +1,6 @@
 """This script contains the image preprocessing code for Deep3DFaceRecon_pytorch
+这段代码是Deep3DFaceRecon_pytorch项目中的图像预处理代码。
+整个流程的目标是将输入的人脸图像对齐到一个标准的3D人脸形状，以便后续的人脸重建任务。
 """
 
 import numpy as np
@@ -14,7 +16,13 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 
 
 # calculating least square problem for image alignment
+# POS 函数：这个函数计算了通过最小二乘法解决图像对齐问题的平移和缩放参数。
+# 具体而言，它使用了人脸关键点的标准3D坐标和检测到的2D坐标，通过线性方程求解得到平移向量 t 和缩放因子 s。
 def POS(xp, x):
+    """
+    xp: 一个形状为 (2, N) 的 NumPy 数组，其中 N 是人脸关键点的数量。这个数组包含了检测到的人脸关键点的 2D 坐标，通常是 (x, y) 的形式。
+    x: 一个形状为 (3, N) 的 NumPy 数组，表示对应的标准3D人脸关键点的坐标。这个数组包含了每个关键点的标准3D坐标，通常是 (x, y, z) 的形式。
+    """
     npts = xp.shape[1]
 
     A = np.zeros([2*npts, 8])
@@ -39,6 +47,8 @@ def POS(xp, x):
     return t, s
     
 # resize and crop images for face reconstruction
+# resize_n_crop_img 函数：该函数用于将图像进行调整和裁剪，以用于人脸重建。
+# 它接受原始图像、关键点、平移向量 t、缩放因子 s 和目标大小作为输入，并返回调整后的图像、关键点和（可选的）掩码。
 def resize_n_crop_img(img, lm, t, s, target_size=224., mask=None):
     w0, h0 = img.size
     w = (w0*s).astype(np.int32)
