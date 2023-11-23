@@ -1,6 +1,10 @@
 """This script is the differentiable renderer for Deep3DFaceRecon_pytorch
     Attention, antialiasing step is missing in current version.
 """
+"""
+这段代码实现了一个用于渲染3D模型的可微分渲染器（Differentiable Renderer）。
+该渲染器基于 PyTorch3D 库实现，其中使用了 PyTorch3D 提供的 MeshRasterizer 和相关组件。
+"""
 import pytorch3d.ops
 import torch
 import torch.nn.functional as F
