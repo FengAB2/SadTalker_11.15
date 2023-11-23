@@ -1,3 +1,4 @@
+# 这段代码实现了一个人脸关键点检测模型，使用了改进的 Hourglass 网络结构。
 import cv2
 import numpy as np
 import torch
@@ -7,16 +8,24 @@ import torch.nn.functional as F
 
 def calculate_points(heatmaps):
     # change heatmaps to landmarks
+    # 用于从关键点热图中计算出关键点的坐标。
     B, N, H, W = heatmaps.shape
     HW = H * W
     BN_range = np.arange(B * N)
-
+    # 对每个热图，找到最大值对应的索引，即热图中最可能是关键点的位置。
     heatline = heatmaps.reshape(B, N, HW)
     indexes = np.argmax(heatline, axis=2)
-
+    #将索引转换为二维坐标，得到每个关键点在热图上的位置。
     preds = np.stack((indexes % W, indexes // W), axis=2)
     preds = preds.astype(np.float, copy=False)
-
+    
+    # 对于每个关键点，考虑其周围像素的值，通过插值的方式微调关键点的位置，以更精确地定位关键点在图像中的位置。
+    """
+    具体地说，对于每个关键点，分别考虑其水平方向和垂直方向上相邻像素的值（x_up, x_down, y_up, y_down）。
+    然后，通过计算这些相邻像素值的差异，并进行符号化和缩放，得到了一个微调的偏移向量 think_diff。
+    最后，将这个微调的偏移向量应用到关键点坐标上，以更精确地定位关键点在图像中的位置。
+    最后两行代码是为了将微调后的坐标值映射到图像范围内。
+    """
     inr = indexes.ravel()
 
     heatline = heatline.reshape(B * N, HW)
@@ -40,10 +49,13 @@ def calculate_points(heatmaps):
     preds += .5
     return preds
 
-
+"""
+在输入张量中添加坐标信息。它的主要目的是为了在训练过程中向模型提供关于像素在图像中位置的额外信息，以增强模型对位置敏感的任务的性能。
+"""
 class AddCoordsTh(nn.Module):
 
     def __init__(self, x_dim=64, y_dim=64, with_r=False, with_boundary=False):
+        # 图像的宽度（x_dim）、高度（y_dim）、是否包含径向坐标（with_r）、是否包含边界信息（with_boundary）
         super(AddCoordsTh, self).__init__()
         self.x_dim = x_dim
         self.y_dim = y_dim
